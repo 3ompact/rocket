@@ -1,5 +1,6 @@
 package com.a3ompact.rocket.ui.activity;
 
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
@@ -29,5 +30,8 @@ public abstract class  BaseActivity  extends AppCompatActivity{
 
     //数据初始化
     protected abstract void initData();
+
+    //当页面出现网络问题等时，对背景进行代替
+    protected abstract void setBackground();
 
 }
