@@ -1,13 +1,16 @@
 package com.a3ompact.rocket.utils;
 
 import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 
@@ -110,6 +113,81 @@ public class StatusBarCompat {
         statusView.setLayoutParams(lp);
         statusView.setBackgroundColor(color);
         return statusView;
+    }
+
+    //隐藏statusbar,设置的地方应该是在 onresume中去调用
+    public void hideStatusBar(AppCompatActivity activity){
+        //android版本小于16的时候需要在setContentView 方法之前调用
+        if(Build.VERSION.SDK_INT < 16){
+            activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }else{
+
+            View decorView = activity.getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+        }
+
+        /**
+         * 根据郭瀮处理沉浸式
+         *
+         */
+        if(Build.VERSION.SDK_INT > 16){
+            View decorView = activity.getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_FULLSCREEN;
+            decorView.setSystemUiVisibility(option);
+            android.support.v7.app.ActionBar actionBar = activity.getSupportActionBar();
+            actionBar.hide();
+        }
+
+        if(Build.VERSION.SDK_INT > 21){
+            View decorView = activity.getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            activity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            android.support.v7.app.ActionBar actionBar = activity.getSupportActionBar();
+            actionBar.hide();
+        }
+
+
+
+
+    }
+
+    //隐藏导航栏
+    public void hideNaviBar(AppCompatActivity appCompatActivity ){
+        //隐藏导航栏  该种模式下轻触显示屏，会退出沉浸模式
+//        View decorView = appCompatActivity.getWindow().getDecorView();
+//        int option = View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+//        decorView.setSystemUiVisibility(option);
+//        android.support.v7.app.ActionBar actionBar = appCompatActivity.getSupportActionBar();
+//        actionBar.hide();
+        //隐藏导航栏  该种模式下轻触显示屏，不会退出沉浸模式  会有导航栏出现
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = appCompatActivity.getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            appCompatActivity.getWindow().setNavigationBarColor(Color.TRANSPARENT);
+            appCompatActivity.getWindow().setStatusBarColor(Color.TRANSPARENT);
+            android.support.v7.app.ActionBar actionBar = appCompatActivity.getSupportActionBar();
+            actionBar.hide();
+        }
+
+        //真正的沉浸式，除了少数视频或者是游戏模式下需要该方式
+
+        if ( Build.VERSION.SDK_INT >= 19) {
+            View decorView = appCompatActivity.getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+
+
     }
 
 }
